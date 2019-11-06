@@ -89,7 +89,7 @@ interface IEvent {
      *
      * @return
      */
-    fun queryEventSrc(startTime: Long?, endTime: Long?): List<EventSrc>
+    fun queryEventSrc(startTime: Long, endTime: Long): List<EventSrc>
 
 
     /**
@@ -100,7 +100,7 @@ interface IEvent {
      * @param timeAfter
      * @return
      */
-    fun queryShortEvent(timeAfter: Long?): List<ShortEvent>
+    fun queryShortEvent(timeAfter: Long): List<ShortEvent>
 
     /**
      * 尚未结办报警
