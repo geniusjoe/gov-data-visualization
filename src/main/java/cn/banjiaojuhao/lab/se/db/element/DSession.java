@@ -8,7 +8,23 @@ public class DSession {
     @Id
     @GeneratedValue
     @Column(name = "sid")
-    String sid;
+    private String sid;
     @Column(name = "id")
-    int uid;
+    private int uid;
+
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
+    }
+
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
 }

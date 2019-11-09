@@ -81,10 +81,6 @@ public class OPUser {
         try {
             session = factory.openSession();
             tx = session.beginTransaction();
-            // Create CriteriaBuilder
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            // Create CriteriaQuery
-            CriteriaQuery<DUser> query = builder.createQuery(DUser.class);
 
             DUser usr=session.load(DUser.class, uid);
             usr.setPassword(new_password);
@@ -107,11 +103,6 @@ public class OPUser {
         try {
             session = factory.openSession();
             tx = session.beginTransaction();
-            // Create CriteriaBuilder
-            CriteriaBuilder builder = session.getCriteriaBuilder();
-            // Create CriteriaQuery
-            CriteriaQuery<DUser> query = builder.createQuery(DUser.class);
-            Root<DUser> root = query.from(DUser.class);
 
             DUser usr=session.load(DUser.class,new_profile.component1());
             usr.setNickName(new_profile.component2());
@@ -119,7 +110,7 @@ public class OPUser {
             usr.setPosition(new_profile.component4());
             usr.setPhone(new_profile.component5());
             usr.setEmail(new_profile.component6());
-            session.update(usr);
+            session.saveOrUpdate(usr);
 
             tx.commit();
             session.close();
