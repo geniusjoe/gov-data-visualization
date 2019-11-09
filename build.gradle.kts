@@ -11,6 +11,7 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
 
 val vertxVersion = "3.8.0"
@@ -22,6 +23,7 @@ val captchaVersion = "1.6.2"
 
 val hibernateVersion = "5.4.8.Final"
 val sqliteDialect = "0.1.0"
+val jpaVersion = "0.1.0"
 
 dependencies {
     // Use the Kotlin JDK 8 standard library.
@@ -39,7 +41,8 @@ dependencies {
 
     implementation("org.xerial:sqlite-jdbc:$sqliteVersion")
     implementation("org.hibernate:hibernate-core:$hibernateVersion")
-    implementation("org.hibernate.dialect:sqlite-dialect:$sqliteDialect")
+    implementation("com.github.gwenn:sqlite-dialect:$sqliteDialect")
+    implementation("org.eclipse.persistence:eclipselink:$jpaVersion")
 
     implementation("com.github.whvcse:easy-captcha:$captchaVersion")
 

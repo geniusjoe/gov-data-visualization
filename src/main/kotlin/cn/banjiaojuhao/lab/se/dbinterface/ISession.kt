@@ -12,17 +12,17 @@ interface ISession {
     fun createSession(uid: Int): String
 
     /**
-     * query session whose sid == sid in params
+     * query middleware whose sid == sid in params
      *
-     * @param sid sid of session to query
-     * @return uid of that session or null if not exists
+     * @param sid sid of middleware to query
+     * @return uid of that middleware or null if not exists
      */
     fun querySession(sid: String): Int?
 
     /**
-     * delete session whose sid == sid in params
+     * delete middleware whose sid == sid in params
      *
-     * @param sid sid of session to delete
+     * @param sid sid of middleware to delete
      */
     fun deleteSession(sid: String)
 }
