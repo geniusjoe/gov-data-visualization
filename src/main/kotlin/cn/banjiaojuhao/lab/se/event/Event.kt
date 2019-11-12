@@ -84,7 +84,7 @@ data class ShortEvent(
 
 data class TimePassed(
         @JSONField(name = "dispose_unit_id") val disposeUnitId: Int,
-        @JSONField(name = "time_passed") val timePassed: Int
+        @JSONField(name = "time_passed") val timePassed: Long
 )
 
 data class DepartmentKpi(

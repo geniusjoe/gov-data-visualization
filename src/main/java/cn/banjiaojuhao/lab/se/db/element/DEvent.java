@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class DEvent {
     @Id
     @GeneratedValue
-    @Column(name = "recId")
+    @Column(name = "rec_id")
     private int recId;
 
     @Column(name = "create_time")

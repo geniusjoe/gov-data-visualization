@@ -9,7 +9,7 @@ public class DSession {
     @GeneratedValue
     @Column(name = "sid")
     private String sid;
-    @Column(name = "id")
+    @Column(name = "uid")
     private int uid;
 
     public String getSid() {
