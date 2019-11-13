@@ -11,6 +11,7 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
 }
 
 val vertxVersion = "3.8.0"
@@ -20,10 +21,14 @@ val fastJsonVersion = "1.2.61"
 val sqliteVersion = "3.28.0"
 val captchaVersion = "1.6.2"
 
+val hibernateVersion = "5.4.8.Final"
+val sqliteDialect = "0.1.0"
+val jpaVersion = "0.1.0"
+
 dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
+    gradle
     implementation("com.alibaba:fastjson:$fastJsonVersion")
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("io.vertx:vertx-web:$vertxVersion")
@@ -34,9 +39,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$reflectionVersion")
 
-
     implementation("org.xerial:sqlite-jdbc:$sqliteVersion")
-
+    implementation("org.hibernate:hibernate-core:$hibernateVersion")
+    implementation("com.github.gwenn:sqlite-dialect:$sqliteDialect")
+    implementation("org.eclipse.persistence:eclipselink:$jpaVersion")
 
     implementation("com.github.whvcse:easy-captcha:$captchaVersion")
 
