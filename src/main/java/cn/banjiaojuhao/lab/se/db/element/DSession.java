@@ -1,12 +1,15 @@
 package cn.banjiaojuhao.lab.se.db.element;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "SESSION")
 public class DSession {
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "sid")
     private String sid;
     @Column(name = "uid")

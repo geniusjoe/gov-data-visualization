@@ -10,13 +10,14 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 public class OPUser {
-    private Middleware md=new Middleware();
-    private SessionFactory factory= Middleware.factory;
+    private Middleware md = new Middleware();
+    private SessionFactory factory = Middleware.factory;
 
     public User queryUserbyName(String str) {
         Transaction tx = null;
@@ -34,11 +35,12 @@ public class OPUser {
             query.select(root).where(builder.equal(root.get("username"), str));
 
             Query<DUser> q = session.createQuery(query);
-            DUser dusr = q.getSingleResult();
-            if (dusr != null)
+            try {
+                DUser dusr = q.getSingleResult();
                 return Transfer.DUser2User(dusr);
-            else return null;
-
+            } catch (NoResultException e) {
+                return null;
+            }
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -62,11 +64,12 @@ public class OPUser {
             query.select(root).where(builder.equal(root.get("uid"), uid));
 
             Query<DUser> q = session.createQuery(query);
-            DUser dusr = q.getSingleResult();
-            if (dusr != null)
+            try {
+                DUser dusr = q.getSingleResult();
                 return Transfer.DUser2User(dusr);
-            else return null;
-
+            } catch (NoResultException e) {
+                return null;
+            }
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -74,7 +77,7 @@ public class OPUser {
         }
     }
 
-    public void changePassword(int uid, String new_password){
+    public void changePassword(int uid, String new_password) {
         Transaction tx = null;
         Session session = null;
 
@@ -82,7 +85,7 @@ public class OPUser {
             session = factory.openSession();
             tx = session.beginTransaction();
 
-            DUser usr=session.load(DUser.class, uid);
+            DUser usr = session.load(DUser.class, uid);
             usr.setPassword(new_password);
             session.update(usr);
 
@@ -96,7 +99,7 @@ public class OPUser {
     }
 
 
-    public void updateUserProfile(UserProfile new_profile){
+    public void updateUserProfile(UserProfile new_profile) {
         Transaction tx = null;
         Session session = null;
 
@@ -104,7 +107,7 @@ public class OPUser {
             session = factory.openSession();
             tx = session.beginTransaction();
 
-            DUser usr=session.load(DUser.class,new_profile.component1());
+            DUser usr = session.load(DUser.class, new_profile.component1());
             usr.setNickName(new_profile.component2());
             usr.setDepartment(new_profile.component3());
             usr.setPosition(new_profile.component4());
@@ -121,7 +124,7 @@ public class OPUser {
         }
     }
 
-    public UserProfile queryUserProfile(int uid){
+    public UserProfile queryUserProfile(int uid) {
         Transaction tx = null;
         Session session = null;
 
@@ -137,12 +140,14 @@ public class OPUser {
             query.select(root).where(builder.equal(root.get("uid"), uid));
 
             Query<DUser> q = session.createQuery(query);
-            DUser dusr = q.getSingleResult();
-            if (dusr != null)
-                return new UserProfile(dusr.getUid(),dusr.getNickName(),
-                        dusr.getDepartment(),dusr.getPosition(),
-                        dusr.getPhone(),dusr.getEmail());
-            else return null;
+            try {
+                DUser dusr = q.getSingleResult();
+                return new UserProfile(dusr.getUid(), dusr.getNickName(),
+                        dusr.getDepartment(), dusr.getPosition(),
+                        dusr.getPhone(), dusr.getEmail());
+            } catch (NoResultException e) {
+                return null;
+            }
 
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();

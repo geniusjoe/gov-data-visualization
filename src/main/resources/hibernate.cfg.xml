@@ -14,6 +14,6 @@
 
         <property name="hibernate.hbm2ddl.auto">update</property>
 
-        <mapping class="com.srccodes.example.hibernate.Contact"/>
+<!--        <mapping class="com.srccodes.example.hibernate.Contact"/>-->
     </session-factory>
 </hibernate-configuration>

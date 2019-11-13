@@ -13,7 +13,7 @@ public class Middleware {
         if (factory == null) {
             try {
                 factory = new Configuration().
-                        configure("src/hibernate.cfg.xml").
+                        configure("hibernate.cfg.xml").
                         //addPackage("com.xyz") //add package if used.
                                 addAnnotatedClass(DEvent.class).
                                 addAnnotatedClass(DSession.class).

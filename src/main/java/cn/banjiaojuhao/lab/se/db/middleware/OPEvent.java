@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -18,10 +19,27 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 public class OPEvent {
     private Middleware md = new Middleware();
     private SessionFactory factory = Middleware.factory;
+
+    private static int getSize(Query query) {
+        try {
+            return query.getResultList().size();
+        } catch (NoResultException e) {
+            return 0;
+        }
+    }
+
+    private static <T, A> List<T> getResultList(Query q, Function<A, T> creator) {
+        List<T> result = new ArrayList<>();
+        for (Object eve : q.getResultList()) {
+            result.add(creator.apply((A) eve));
+        }
+        return result;
+    }
 
     public List<Event> queryAppeal(int source) {
         Transaction tx = null;
@@ -40,13 +58,9 @@ public class OPEvent {
             query.orderBy(builder.desc(root.get("createTime")));
 
             Query<DEvent> q = session.createQuery(query);
-            List<DEvent> deve = q.getResultList();
-            List<Event> res = new ArrayList<>();
-            for (DEvent eve : deve) {
-                res.add(Transfer.DEvent2Event(eve));
-            }
-            return res;
-
+            return getResultList(q, (obj) ->
+                    Transfer.DEvent2Event((DEvent) obj)
+            );
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -90,10 +104,13 @@ public class OPEvent {
             query.select(root).where(builder.equal(root.get("recId"), rec_id));
 
             Query<DEvent> q = session.createQuery(query);
-            DEvent deve = q.getSingleResult();
-            if (deve != null)
+            try {
+                DEvent deve = q.getSingleResult();
                 session.delete(deve);
-            tx.commit();
+                tx.commit();
+            } catch (NoResultException e) {
+
+            }
 
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
@@ -145,17 +162,19 @@ public class OPEvent {
 
             query.select(root).where(builder.and(Bse, Dps));
             Query<DEvent> q = session.createQuery(query);
-            dps = q.getResultList().size();
+            dps = getSize(q);
+
 
             query = builder.createQuery(DEvent.class);
             query.select(root).where(builder.and(Bse, To_dps));
             q = session.createQuery(query);
-            to_dps = q.getResultList().size();
+            to_dps = getSize(q);
 
             query = builder.createQuery(DEvent.class);
             query.select(root).where(builder.and(Bse, Cplt));
             q = session.createQuery(query);
-            cplt = q.getResultList().size();
+            cplt = getSize(q);
+
 
             srv_idx = (int) (Math.random() * 6);
 
@@ -186,13 +205,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<HotCommunity> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new HotCommunity((int) obj[1], (int) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new HotCommunity((int) obj[1], (int) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -218,13 +232,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<EventProperty> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new EventProperty((int) obj[1], (int) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new EventProperty((int) obj[1], (int) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -249,13 +258,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<ArchiveEvent> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new ArchiveEvent((int) obj[1], (int) obj[0], new ArchiveEventDetail((int) obj[2], (int) obj[0])));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new ArchiveEvent((int) obj[1], (int) obj[0], new ArchiveEventDetail((int) obj[2], (int) obj[0])));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -280,13 +284,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<WordCloud> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new WordCloud((int) obj[1], (int) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new WordCloud((int) obj[1], (int) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -311,13 +310,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<StreetSubtype> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new StreetSubtype((int) obj[1], (int) obj[2], (int) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new StreetSubtype((int) obj[1], (int) obj[2], (int) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -342,13 +336,8 @@ public class OPEvent {
             query.having(builder.between(root.get("createTime"), startTime, endTime));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<EventSrc> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new EventSrc((int) obj[1], (int) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new EventSrc((int) obj[1], (int) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -369,19 +358,14 @@ public class OPEvent {
             CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
             Root<DEvent> root = query.from(DEvent.class);
             query.multiselect(builder.count(root.get("createTime")), root.get("streetId"), root.get("communityId"),
-                    root.get("eventSrcId"), root.get("subTypeId"), root.get("event_property_id"), root.get("eventDisposeState"),root.get("recId"));
+                    root.get("eventSrcId"), root.get("subTypeId"), root.get("event_property_id"), root.get("eventDisposeState"), root.get("recId"));
 //            query.groupBy(root.get("eventSrcId"));
             query.having(builder.gt(root.get("createTime"), timeAfter));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<ShortEvent> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                res.add(new ShortEvent((int)obj[7],(long) obj[0], (int) obj[1], (int) obj[2],
-                        (int) obj[3], (int) obj[4], (int) obj[5], (int) obj[6]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new ShortEvent((int) obj[7], (long) obj[0], (int) obj[1], (int) obj[2],
+                            (int) obj[3], (int) obj[4], (int) obj[5], (int) obj[6]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -406,13 +390,8 @@ public class OPEvent {
             query.orderBy(builder.asc(root.get("eventTypeId")), builder.asc(root.get("createTime")));
 
             Query<DEvent> q = session.createQuery(query);
-            List<DEvent> deve = q.getResultList();
-            List<Event> res = new ArrayList<>();
-            for (DEvent eve : deve) {
-                res.add(Transfer.DEvent2Event(eve));
-            }
-            return res;
-
+            return getResultList(q, (obj) ->
+                    Transfer.DEvent2Event((DEvent) obj));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -436,14 +415,8 @@ public class OPEvent {
             query.groupBy(root.get("disposeUnitId"));
 
             Query<Object[]> q = session.createQuery(query);
-            List<Object[]> lst = q.getResultList();
-            List<TimePassed> res = new ArrayList<>();
-            for (Object[] obj : lst) {
-                //TODO
-                res.add(new TimePassed((int) obj[1], (Long) obj[0]));
-            }
-            return res;
-
+            return getResultList(q, (Object[] obj) ->
+                    new TimePassed((int) obj[1], (Long) obj[0]));
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -468,31 +441,36 @@ public class OPEvent {
             query.select(root);
 
             Query<DEvent> q = session.createQuery(query);
-            List<DEvent> lst = q.getResultList();
-            for (DEvent deve : lst) {
-                int cur_unit = deve.getDisposeUnitId();
-                DDepartmentKpi cur;
-                if (mp.containsKey(cur_unit)) {
-                    cur = mp.get(deve.getDisposeUnitId());
-                } else {
-                    cur = new DDepartmentKpi();
-                    cur.disposeUnitId = cur_unit;
-                }
-                int cur_prp_id = deve.getEventPropertyId(), cur_dps = deve.getEventDisposeState();
-                if (cur_prp_id == 2) cur.complaint++;
-                else if (cur_prp_id == 5) cur.thanks++;
-                else cur.disposing++;
-                if (cur_dps == 0) cur.overtime++;
-                else if (cur_dps == 1) cur.disposing++;
-                else if (cur_dps == 2) cur.intime++;
-                mp.put(cur_unit, cur);
-            }
-
+            // TODO: 2019/11/13 sql
             List<DepartmentKpi> res = new ArrayList<>();
-            for (DDepartmentKpi value : mp.values()) {
-                res.add(new DepartmentKpi(value.disposeUnitId,
-                        value.complaint,value.thanks,value.disposing,
-                        value.overtime,value.intime,0));
+            try {
+                List<DEvent> lst = q.getResultList();
+                for (DEvent deve : lst) {
+                    int cur_unit = deve.getDisposeUnitId();
+                    DDepartmentKpi cur;
+                    if (mp.containsKey(cur_unit)) {
+                        cur = mp.get(deve.getDisposeUnitId());
+                    } else {
+                        cur = new DDepartmentKpi();
+                        cur.disposeUnitId = cur_unit;
+                    }
+                    int cur_prp_id = deve.getEventPropertyId(), cur_dps = deve.getEventDisposeState();
+                    if (cur_prp_id == 2) cur.complaint++;
+                    else if (cur_prp_id == 5) cur.thanks++;
+                    else cur.disposing++;
+                    if (cur_dps == 0) cur.overtime++;
+                    else if (cur_dps == 1) cur.disposing++;
+                    else if (cur_dps == 2) cur.intime++;
+                    mp.put(cur_unit, cur);
+                }
+
+                for (DDepartmentKpi value : mp.values()) {
+                    res.add(new DepartmentKpi(value.disposeUnitId,
+                            value.complaint, value.thanks, value.disposing,
+                            value.overtime, value.intime, 0));
+                }
+            } catch (NoResultException e) {
+
             }
             return res;
 

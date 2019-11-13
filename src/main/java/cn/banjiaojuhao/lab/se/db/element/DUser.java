@@ -25,7 +25,9 @@ public class DUser {
     @Column(name = "email")
     private String email;
 
-    public DUser(int component1, String component2, String component3, String component4, int component5, String component6, String component7, String component8, String component9) {
+    public DUser(){}
+
+    DUser(int component1, String component2, String component3, String component4, int component5, String component6, String component7, String component8, String component9) {
         uid = component1;
         nickName = component2;
         username = component3;

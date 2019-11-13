@@ -8,13 +8,26 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.jetbrains.annotations.NotNull;
 
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import java.util.Random;
 
 public class OPSession {
     private Middleware md = new Middleware();
     private SessionFactory factory = Middleware.factory;
+    private static Random random = new Random(System.currentTimeMillis());
+
+    private static String getRandomString(int length) { //length表示生成字符串的长度
+        String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(base.length());
+            sb.append(base.charAt(number));
+        }
+        return sb.toString();
+    }
 
     public String createSession(int uid) {
         Transaction tx = null;
@@ -56,11 +69,12 @@ public class OPSession {
             query.select(root).where(builder.equal(root.get("sid"), sid));
 
             Query<DSession> q = session.createQuery(query);
-            DSession dses = q.getSingleResult();
-            if (dses != null)
+            try {
+                DSession dses = q.getSingleResult();
                 return dses.getUid();
-            else return null;
-
+            } catch (NoResultException e) {
+                return null;
+            }
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
@@ -85,10 +99,13 @@ public class OPSession {
             query.select(root).where(builder.equal(root.get("sid"), sid));
 
             Query<DSession> q = session.createQuery(query);
-            DSession dses = q.getSingleResult();
-            if (dses != null)
+            try {
+                DSession dses = q.getSingleResult();
                 session.delete(dses);
-            tx.commit();
+                tx.commit();
+            } catch (NoResultException e) {
+
+            }
 
         } catch (HibernateException e) {
             if (tx != null) tx.rollback();

@@ -33,7 +33,7 @@ class Captcha {
     suspend fun verify(id: Int, resultText: String): Boolean {
         resultLocker.withLock {
             return if (resultMap.containsKey(id)) {
-                val correct = resultMap[id] == resultText
+                val correct = resultMap[id].equals(resultText, true)
                 resultMap.remove(id)
                 correct
             } else {
