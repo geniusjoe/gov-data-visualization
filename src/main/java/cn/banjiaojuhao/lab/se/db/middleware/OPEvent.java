@@ -369,7 +369,7 @@ public class OPEvent {
             CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
             Root<DEvent> root = query.from(DEvent.class);
             query.multiselect(builder.count(root.get("createTime")), root.get("streetId"), root.get("communityId"),
-                    root.get("eventSrcId"), root.get("subTypeId"), root.get("event_property_id"), root.get("eventDisposeState"));
+                    root.get("eventSrcId"), root.get("subTypeId"), root.get("event_property_id"), root.get("eventDisposeState"),root.get("recId"));
 //            query.groupBy(root.get("eventSrcId"));
             query.having(builder.gt(root.get("createTime"), timeAfter));
 
@@ -377,7 +377,7 @@ public class OPEvent {
             List<Object[]> lst = q.getResultList();
             List<ShortEvent> res = new ArrayList<>();
             for (Object[] obj : lst) {
-                res.add(new ShortEvent((long) obj[0], (int) obj[1], (int) obj[2],
+                res.add(new ShortEvent((int)obj[7],(long) obj[0], (int) obj[1], (int) obj[2],
                         (int) obj[3], (int) obj[4], (int) obj[5], (int) obj[6]));
             }
             return res;
