@@ -156,4 +156,24 @@ public class OPUser {
         }
     }
 
+    public void InsertUser(User usr){
+        Transaction tx = null;
+        Session session = null;
+
+        try {
+            session = factory.openSession();
+            tx = session.beginTransaction();
+
+            session.saveOrUpdate(Transfer.User2DUser(usr));
+
+            tx.commit();
+            session.close();
+
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
+
+
 }
