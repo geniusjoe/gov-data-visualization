@@ -73,6 +73,7 @@ data class EventSrc(
 )
 
 data class ShortEvent(
+        @JSONField(name = "rec_id") val recId: Int,
         @JSONField(name = "create_time") val createTime: Long,
         @JSONField(name = "street_id") val streetId: Int,
         @JSONField(name = "community_id") val communityId: Int,
@@ -84,7 +85,7 @@ data class ShortEvent(
 
 data class TimePassed(
         @JSONField(name = "dispose_unit_id") val disposeUnitId: Int,
-        @JSONField(name = "time_passed") val timePassed: Int
+        @JSONField(name = "time_passed") val timePassed: Long
 )
 
 data class DepartmentKpi(
